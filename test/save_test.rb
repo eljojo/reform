@@ -54,6 +54,32 @@ class SaveTest < BaseTest
     album.songs[0].saved?.must_equal true
     album.artist.saved?.must_equal nil
   end
+
+  class Album
+    def special_artist
+      artist
+    end
+
+    # Defining this method makes the tests pass
+    # def special_artist=(_)
+    # end
+  end
+
+  class SpecialArtistForm < Reform::Form
+    property :special_artist do
+      property :name
+    end
+  end
+
+  it do
+    test_form = SpecialArtistForm.new(album)
+    test_form.validate(special_artist: {name: "Queens of The Stone Age"})
+    test_form.save
+
+    album.saved?.must_equal true
+    album.special_artist.saved?.must_equal true
+    album.special_artist.name.must_equal "Queens of The Stone Age"
+  end
 end
 
 
